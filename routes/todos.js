@@ -16,30 +16,42 @@ router.get('/list', function(req, res, next) {
 });
 
 router.post('/add', function(req, res, next) {
-  var param = req.query || req.params;
+  var param = req.body;
   pool.getConnection(function(err, connection) {
-    connection.query(todosSQL.insert, [null, param.todo, param.completed], function(err, result) {
-      res.json(result);
+    connection.query(todosSQL.insert, [null, param.name, param.completed], function(err, result) {
+      if (result) {
+        res.json({
+          message: '添加成功'
+        });
+      }
       connection.release();
     });
   })
 });
 
 router.post('/update', function(req, res, next) {
-  var param = req.query || req.params;
+  var param = req.body;
   pool.getConnection(function(err, connection) {
-    connection.query(todosSQL.update, [param.todo, param.completed, param.id], function(err, result) {
-      res.json(result);
+    connection.query(todosSQL.update, [param.name, param.completed, param.id], function(err, result) {
+      if (result) {
+        res.json({
+          message: '修改成功'
+        });
+      }
       connection.release();
     });
   })
 });
 
 router.post('/delete', function(req, res, next) {
-  var param = req.query || req.params;
+  var param = req.body;
   pool.getConnection(function(err, connection) {
     connection.query(todosSQL.delte, [param.id], function(err, result) {
-      res.json(result);
+      if (result) {
+        res.json({
+          message: '删除成功'
+        });
+      }
       connection.release();
     });
   })

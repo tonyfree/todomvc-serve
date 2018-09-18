@@ -6,7 +6,7 @@ CREATE SCHEMA `todosdb` ;
 
 CREATE TABLE `todosdb`.`todos` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `todo` VARCHAR(45) NOT NULL,
+  `name` VARCHAR(45) NOT NULL,
   `completed` INT(2) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`));
 ```
@@ -45,9 +45,20 @@ app.use('./todos', todosRouter)
 ```
 yarn add cors -S
 ```
-```
+```javascript
 // app.js
 var cors = require('cors')
 
 app.use(cors())
+```
+
+### 支持post
+```
+yarn add body-parser -S
+```
+```javascript
+// api.js
+var bodyParser = require('body-parser')
+
+app.use(bodyParser.json())
 ```
