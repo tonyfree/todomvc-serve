@@ -37,5 +37,17 @@ src
 ```javascript
 // app.js
 var todosRouter = require('./routes/todos')
+
 app.use('./todos', todosRouter)
+```
+
+### 跨域
+```
+yarn add cors -S
+```
+```
+// app.js
+var cors = require('cors')
+
+app.use(cors())
 ```
