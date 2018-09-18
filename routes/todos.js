@@ -46,7 +46,7 @@ router.post('/update', function(req, res, next) {
 router.post('/delete', function(req, res, next) {
   var param = req.body;
   pool.getConnection(function(err, connection) {
-    connection.query(todosSQL.delte, [param.id], function(err, result) {
+    connection.query(todosSQL.delete, [param.id], function(err, result) {
       if (result) {
         res.json({
           message: '删除成功'
