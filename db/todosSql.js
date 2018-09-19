@@ -1,7 +1,10 @@
 var TodosSQL = {
   queryAll: 'select * from Todos',
   insert: 'insert into Todos(id,name,completed) values(?,?,?)',
-  update: 'upate Todos set name=?,completed=? where id=?',
-  delete: 'delete from todos where id=?'
+  toggle: 'update Todos set completed=? where id=?',
+  toggleAll: 'update Todos set completed=? where completed=?',
+  edit: 'update Todos set name=? where id=?',
+  delete: 'delete from todos where id=?',
+  clearCompleted: 'delete from Todos where completed=1'
 };
 module.exports = TodosSQL;

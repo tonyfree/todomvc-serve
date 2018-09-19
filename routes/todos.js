@@ -29,13 +29,41 @@ router.post('/add', function(req, res, next) {
   })
 });
 
-router.post('/update', function(req, res, next) {
+router.post('/toggle', function(req, res, next) {
   var param = req.body;
   pool.getConnection(function(err, connection) {
-    connection.query(todosSQL.update, [param.name, param.completed, param.id], function(err, result) {
+    connection.query(todosSQL.toggle, [param.completed, param.id], function(err, result) {
       if (result) {
         res.json({
-          message: '修改成功'
+          message: '修改状态成功'
+        });
+      }
+      connection.release();
+    });
+  })
+});
+
+router.post('/toggleAll', function(req, res, next) {
+  var param = req.body;
+  pool.getConnection(function(err, connection) {
+    connection.query(todosSQL.toggleAll, [param.after, param.before], function(err, result) {
+      if (result) {
+        res.json({
+          message: '修改全部状态成功'
+        });
+      }
+      connection.release();
+    });
+  })
+});
+
+router.post('/edit', function(req, res, next) {
+  var param = req.body;
+  pool.getConnection(function(err, connection) {
+    connection.query(todosSQL.edit, [param.name, param.id], function(err, result) {
+      if (result) {
+        res.json({
+          message: '修改name成功'
         });
       }
       connection.release();
@@ -50,6 +78,20 @@ router.post('/delete', function(req, res, next) {
       if (result) {
         res.json({
           message: '删除成功'
+        });
+      }
+      connection.release();
+    });
+  })
+});
+
+router.post('/clearCompleted', function(req, res, next) {
+  var param = req.body;
+  pool.getConnection(function(err, connection) {
+    connection.query(todosSQL.clearCompleted, function(err, result) {
+      if (result) {
+        res.json({
+          message: '删除completed成功'
         });
       }
       connection.release();
