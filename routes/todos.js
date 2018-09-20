@@ -1,101 +1,74 @@
 var express = require('express');
 var router = express.Router();
 
-var mysql = require('mysql');
+var mongoose = require('mongoose');
 var config = require('../db/config');
-var todosSQL = require('../db/todosSql');
-var pool = mysql.createPool( config.mysql );
+var db = mongoose.createConnection(config.mongodb, { useNewUrlParser: true })
+var monSchema = new mongoose.Schema({
+  name: {type: String},
+  completed: {type: Number, default: 0}
+});
+var Todo = db.model('Todo', monSchema);
+
 
 router.get('/list', function(req, res, next) {
-  pool.getConnection(function(err, connection) {
-    connection.query(todosSQL.queryAll, function(err, result) {
-      res.json(result);
-      connection.release();
-    });
-  })
+  Todo.find({}, function (err, bear) {
+    if (err) res.send(err);
+    res.json(bear);
+  });
 });
 
 router.post('/add', function(req, res, next) {
   var param = req.body;
-  pool.getConnection(function(err, connection) {
-    connection.query(todosSQL.insert, [null, param.name, param.completed], function(err, result) {
-      if (result) {
-        res.json({
-          message: '添加成功'
-        });
-      }
-      connection.release();
-    });
+  var todo = new Todo({
+    name: param.name,
+    completed: param.completed
   })
+  todo.save(function(err, result){
+    if (err)  res.send(err);
+    res.json({ message: '增加成功' });
+  });
 });
 
 router.post('/toggle', function(req, res, next) {
   var param = req.body;
-  pool.getConnection(function(err, connection) {
-    connection.query(todosSQL.toggle, [param.completed, param.id], function(err, result) {
-      if (result) {
-        res.json({
-          message: '修改状态成功'
-        });
-      }
-      connection.release();
-    });
+  Todo.updateOne({_id: param.id}, {completed: param.completed}, function (err, bear) {
+    if (err) res.send(err);
+    res.json({ message: '修改状态成功' });
   })
 });
 
 router.post('/toggleAll', function(req, res, next) {
   var param = req.body;
-  pool.getConnection(function(err, connection) {
-    connection.query(todosSQL.toggleAll, [param.after, param.before], function(err, result) {
-      if (result) {
-        res.json({
-          message: '修改全部状态成功'
-        });
-      }
-      connection.release();
-    });
+  Todo.updateMany({completed: param.before}, {completed: param.after}, function (err, bear) {
+    if (err) res.send(err);
+    res.json({ message: '修改全部状态成功' });
   })
 });
 
 router.post('/edit', function(req, res, next) {
   var param = req.body;
-  pool.getConnection(function(err, connection) {
-    connection.query(todosSQL.edit, [param.name, param.id], function(err, result) {
-      if (result) {
-        res.json({
-          message: '修改name成功'
-        });
-      }
-      connection.release();
-    });
+  Todo.updateOne({_id: param.id}, {name: param.name}, function (err, bear) {
+    if (err) res.send(err);
+    res.json({ message: '修改name成功' });
   })
 });
 
 router.post('/delete', function(req, res, next) {
   var param = req.body;
-  pool.getConnection(function(err, connection) {
-    connection.query(todosSQL.delete, [param.id], function(err, result) {
-      if (result) {
-        res.json({
-          message: '删除成功'
-        });
-      }
-      connection.release();
-    });
+  Todo.deleteOne({
+    _id: param.id
+  }, function (err, bear) {
+    if (err) res.send(err);
+    res.json({ message: '删除成功' });
   })
 });
 
 router.post('/clearCompleted', function(req, res, next) {
   var param = req.body;
-  pool.getConnection(function(err, connection) {
-    connection.query(todosSQL.clearCompleted, function(err, result) {
-      if (result) {
-        res.json({
-          message: '删除completed成功'
-        });
-      }
-      connection.release();
-    });
+  Todo.deleteMany({completed: 1}, function (err, bear) {
+    if (err) res.send(err);
+    res.json({ message: '删除completed成功' });
   })
 });
 
